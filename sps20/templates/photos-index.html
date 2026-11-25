@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ this.title }}{% endblock %}
+
+{% block body %}
+  <div class="photo-archive">
+    <header class="photo-archive-intro">
+      <p class="photos-kicker">Swiss Python Summit</p>
+      <h1>{{ this.title }}</h1>
+      <div class="photo-archive-lead">{{ this.body }}</div>
+    </header>
+
+    <div class="photo-year-grid">
+      {% for gallery_page in this.children|sort(attribute="year", reverse=true) %}
+        {% set gallery = bag(gallery_page.gallery_bag) %}
+        {% set totals = namespace(photos=0) %}
+        {% for day in gallery.days %}
+          {% set totals.photos = totals.photos + day.photos|length %}
+        {% endfor %}
+
+        <a class="photo-year-card" href="{{ gallery_page|url }}">
+          <img
+            src="{{ gallery.days[0].photos[0].thumb_url }}"
+            width="{{ gallery.days[0].photos[0].width }}"
+            height="{{ gallery.days[0].photos[0].height }}"
+            loading="lazy"
+            decoding="async"
+            alt="{{ gallery_page.description }}"
+          >
+          <span class="photo-year-card-shade"></span>
+          <span class="photo-year-card-content">
+            <span class="photo-year-card-year">{{ gallery_page.year }}</span>
+            <span class="photo-year-card-meta">
+              {{ totals.photos }} photographs · {{ gallery.days|length }} days
+            </span>
+            <span class="photo-year-card-action">Explore gallery&nbsp; ↗</span>
+          </span>
+        </a>
+      {% else %}
+        <p>No photo galleries have been published yet.</p>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
